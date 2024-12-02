@@ -6,8 +6,7 @@ with open("day2.input", "r") as file:
         parts = line.strip().split(" ")
         reports.append(parts)
 
-safeCount = 0
-for report in reports:
+def processReport(report):
     isSafe = []
     increasing = []
     lastLevel = int(report[0])
@@ -29,8 +28,33 @@ for report in reports:
 
     setSafe = set(isSafe)
     setInc = set(increasing)
-    if (len(setSafe) == 1 and setSafe.pop()) and len(setInc) == 1:
+    return (len(setSafe) == 1 and setSafe.pop()) and len(setInc) == 1
+
+
+safeCount = 0
+for report in reports:
+    if processReport(report):
         safeCount += 1
-
-
 print(f"Part1: {safeCount}")
+
+
+def dampener(report, i, origReport):
+    if processReport(report):
+        return True
+    elif i > len(report):
+        return False
+    else:
+        newReport = origReport[:i] + origReport[i + 1:]
+        return dampener(newReport, i+1, origReport)
+        
+safeCount = 0
+for report in reports:
+    if dampener(report, 0, report):
+        safeCount += 1
+        
+print(f"Part2: {safeCount}")
+
+
+
+
+
