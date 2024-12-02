@@ -4,38 +4,21 @@ reports = []
 with open("day2.input", "r") as file:
     for line in file:
         parts = line.strip().split(" ")
-        reports.append(parts)
+        reports.append([int(p) for p in parts])
 
 def processReport(report):
-    isSafe = []
     increasing = []
-    lastLevel = int(report[0])
-    for level in report[1:]:
-        level = int(level)
-
-        diff = abs(level - lastLevel)
-        isSafe.append(1 <= diff and diff <= 3)
-
-        
-        if level < lastLevel:
-            increasing.append(False)
-        elif level > lastLevel:
-            increasing.append(True)
+    for prev, cur in zip(report, report[1:]):
+        if not abs(cur - prev) in range(1,4):
+            return False
+        elif cur == prev:
+            return False
         else:
-            increasing.append(None)
-        
-        lastLevel = level
+            increasing.append(cur > prev)
 
-    setSafe = set(isSafe)
-    setInc = set(increasing)
-    return (len(setSafe) == 1 and setSafe.pop()) and len(setInc) == 1
+    return len(set(increasing)) == 1
 
-
-safeCount = 0
-for report in reports:
-    if processReport(report):
-        safeCount += 1
-print(f"Part1: {safeCount}")
+print(f"Part1: {sum(1 for report in reports if processReport(report))}")
 
 
 def dampener(report, i, origReport):
@@ -47,14 +30,4 @@ def dampener(report, i, origReport):
         newReport = origReport[:i] + origReport[i + 1:]
         return dampener(newReport, i+1, origReport)
         
-safeCount = 0
-for report in reports:
-    if dampener(report, 0, report):
-        safeCount += 1
-        
-print(f"Part2: {safeCount}")
-
-
-
-
-
+print(f"Part2: {sum(1 for report in reports if dampener(report, 0, report))}")
